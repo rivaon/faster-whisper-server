@@ -38,7 +38,9 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         for model_name in config.preload_models:
-            model_manager.load_model(model_name)
+            model = model_manager.load_model(model_name)
+            with model:
+                print(f"✅ Preloaded model '{model_name}' on {config.whisper.inference_device}")
         yield
 
     app = FastAPI(lifespan=lifespan)
